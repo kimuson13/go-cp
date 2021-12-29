@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/kimuson13/go-cp/copy"
+	"github.com/kimuson13/go-cp/utils"
 )
 
 var (
@@ -18,8 +19,9 @@ var (
 func main() {
 	flag.Parse()
 	args := flag.Args()
-	if err := copy.Run(*b, *f, *i, *r, args); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	std := utils.New()
+	if err := copy.Run(*b, *f, *i, *r, args, std); err != nil {
+		fmt.Fprintln(std.ErrOut, err)
 		os.Exit(1)
 	}
 }
