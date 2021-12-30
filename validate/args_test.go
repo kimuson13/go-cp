@@ -162,6 +162,16 @@ func CreateTemps(t *testing.T) ([]string, string, func()) {
 		}
 	}
 
+	defer func() {
+		if err := f1.Close(); err != nil {
+			t.Error(err)
+		}
+
+		if err := f2.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
+
 	return tempFileNames, dir2, closeFunc
 }
 
