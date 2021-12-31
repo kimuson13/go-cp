@@ -42,9 +42,19 @@ func Args(inputArgs []string, overwritePerm, isInteractive bool, std utils.Std) 
 			return fmt.Errorf("Validation Err: %w", ErrNotDir)
 		}
 
+		if overwritePerm {
+			if err := utils.Overwrite(paste); err != nil {
+				return err
+			}
+		}
+
 		if !f.IsDir() && !overwritePerm {
 			if err := Interactive(isInteractive, std); err != nil {
 				return fmt.Errorf("Validation Err: %w", err)
+			}
+
+			if err := utils.Overwrite(paste); err != nil {
+				return err
 			}
 		}
 	}
