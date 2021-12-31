@@ -13,7 +13,7 @@ func CreateBakcUp(backUpFiles []string) error {
 			return err
 		}
 
-		newFile := filepath.Base(bf[:len(bf)-len(filepath.Ext(bf))])
+		newFile := bf[:len(bf)-len(filepath.Ext(bf))]
 		if err := ioutil.WriteFile(fmt.Sprintf("%s~%s", newFile, filepath.Ext(bf)), data, 0644); err != nil {
 			return err
 		}
