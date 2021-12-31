@@ -39,7 +39,7 @@ func Args(inputArgs []string, overwritePerm, isInteractive bool, std utils.Std) 
 	f, err := os.Stat(paste)
 	if err == nil {
 		if len(copyFiles) >= 2 && !f.IsDir() {
-			return fmt.Errorf("Validation Err: %w", err)
+			return fmt.Errorf("Validation Err: %w", ErrNotDir)
 		}
 
 		if !f.IsDir() && !overwritePerm {
