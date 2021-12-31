@@ -43,7 +43,7 @@ func Args(inputArgs []string, overwritePerm, isInteractive bool, std utils.Std) 
 		}
 
 		if overwritePerm {
-			if err := utils.Overwrite(paste); err != nil {
+			if err := os.Remove(paste); err != nil {
 				return err
 			}
 		}
@@ -53,7 +53,7 @@ func Args(inputArgs []string, overwritePerm, isInteractive bool, std utils.Std) 
 				return fmt.Errorf("Validation Err: %w", err)
 			}
 
-			if err := utils.Overwrite(paste); err != nil {
+			if err := os.Remove(paste); err != nil {
 				return err
 			}
 		}
