@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	flag.Parse()
 	args := flag.Args()
 	if err := copy.Run(args); err != nil {
 		if _, err := fmt.Fprintln(os.Stderr, err.Error()); err != nil {
