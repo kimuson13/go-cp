@@ -3,7 +3,9 @@ package copy
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
+	"path/filepath"
 )
 
 var (
@@ -24,6 +26,35 @@ func Run(args []string) error {
 	}
 	pasteDir := args[len(args)-1]
 	if err := ExistSameFileInDir(pasteDir, copyFiles); err != nil {
+		return err
+	}
+
+	for _, file := range copyFiles {
+		if err := MakeCopy(file, pasteDir); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func MakeCopy(fileName, pasteDir string) error {
+	fileInfo, err := os.Open(fileName)
+	if err != nil {
+		return err
+	}
+
+	pasteFile, err := os.Create(filepath.Join(pasteDir, fileInfo.Name()))
+	if err != nil {
+		return err
+	}
+
+	b, err := io.ReadAll(fileInfo)
+	if err != nil {
+		return err
+	}
+
+	if _, err := pasteFile.Write(b); err != nil {
 		return err
 	}
 
