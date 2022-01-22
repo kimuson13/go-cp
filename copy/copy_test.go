@@ -2,7 +2,9 @@ package copy_test
 
 import (
 	"fmt"
+	"io"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/kimuson13/go-cp/copy"
@@ -70,6 +72,39 @@ func TestRunFailed(t *testing.T) {
 	}
 }
 
+func TestMakeCopy(t *testing.T) {
+	input, err := os.Create("hoge")
+	if _, err := input.Write([]byte("this is test")); err != nil {
+		t.Fatal(err)
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	pasteDir := t.TempDir()
+
+	if err := copy.MakeCopy(input.Name(), pasteDir); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := os.Open(filepath.Join(pasteDir, input.Name()))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if b, err := io.ReadAll(got); err != nil {
+		t.Fatal(err)
+	} else if string(b) != "this is test" {
+		t.Errorf("want = this is test, but got %s", string(b))
+	}
+
+	if err := input.Close(); err != nil {
+		t.Error(err)
+	}
+	if err := os.Remove(input.Name()); err != nil {
+		t.Error(err)
+	}
+}
+
 func TestExists(t *testing.T) {
 	tests := map[string]struct {
 		path string
@@ -94,7 +129,7 @@ func TestExists(t *testing.T) {
 func TestExistFileInDir(t *testing.T) {
 	path := t.TempDir()
 	files := S(t, "hoge", "huga")
-	if _, err := os.Create(fmt.Sprintf("%s/temp", path)); err != nil {
+	if _, err := os.Create(filepath.Join(path, "temp")); err != nil {
 		t.Fatal(err)
 	}
 
