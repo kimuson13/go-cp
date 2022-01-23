@@ -6,10 +6,11 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/kimuson13/go-cp/validate"
 )
 
 var (
-	ErrAlreadyExist     = errors.New("file already exist")
 	ErrNotExistCopyFile = errors.New("not exist copy file")
 	ErrTooShort         = errors.New("input args too short, need more than 2 args")
 )
@@ -20,12 +21,12 @@ func Run(args []string) error {
 	}
 	copyFiles := args[:len(args)-1]
 	for _, file := range copyFiles {
-		if !Exists(file) {
+		if !validate.Exists(file) {
 			return fmt.Errorf("%w: %s", ErrNotExistCopyFile, file)
 		}
 	}
 	pasteDir := args[len(args)-1]
-	if err := ExistSameFileInDir(pasteDir, copyFiles); err != nil {
+	if err := validate.ExistSameFileInDir(pasteDir, copyFiles); err != nil {
 		return err
 	}
 
@@ -61,35 +62,35 @@ func MakeCopy(fileName, pasteDir string) error {
 	return nil
 }
 
-func Exists(path string) bool {
-	_, err := os.Stat(path)
+// func Exists(path string) bool {
+// 	_, err := os.Stat(path)
 
-	return !os.IsNotExist(err)
-}
+// 	return !os.IsNotExist(err)
+// }
 
-func ExistSameFileInDir(path string, copyFiles []string) error {
-	files, err := os.ReadDir(path)
-	if err != nil {
-		return err
-	}
+// func ExistSameFileInDir(path string, copyFiles []string) error {
+// 	files, err := os.ReadDir(path)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	for _, file := range files {
-		if !file.IsDir() {
-			if ExistFileName(copyFiles, file.Name()) {
-				return ErrAlreadyExist
-			}
-		}
-	}
+// 	for _, file := range files {
+// 		if !file.IsDir() {
+// 			if ExistFileName(copyFiles, file.Name()) {
+// 				return ErrAlreadyExist
+// 			}
+// 		}
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
-func ExistFileName(target []string, name string) bool {
-	for _, v := range target {
-		if v == name {
-			return true
-		}
-	}
+// func ExistFileName(target []string, name string) bool {
+// 	for _, v := range target {
+// 		if v == name {
+// 			return true
+// 		}
+// 	}
 
-	return false
-}
+// 	return false
+// }
