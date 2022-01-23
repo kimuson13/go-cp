@@ -5,4 +5,10 @@ windowsでunixのcpコマンドを使いたいのでせっかくだし自作す�
 今後必要なら増やしていく。 
 ## 使い方
 下記のコマンドでインストールする  
-``` go install github.com/kimuson13/go-cp/cmd/gocp@latest ```
+``` go install github.com/kimuson13/go-cp@latest ```
+そして  
+```go-cp [コピーしたいファイルのパス(1つ以上)] [コピー先のdir]```  
+で使うことができる。
+## 今後の展開
+- [ ] copy先をdir以外にもできるようにする。
+- [ ] フラッグの実装
