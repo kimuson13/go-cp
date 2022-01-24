@@ -23,7 +23,7 @@ func Run(args []string) error {
 	for i, arg := range args[:len(args)-1] {
 		absolutePath, err := filepath.Abs(arg)
 		if err != nil {
-			return err
+			return fmt.Errorf("go-cp: copyFiles: %w", err)
 		}
 		copyFiles[i] = absolutePath
 	}
@@ -32,7 +32,11 @@ func Run(args []string) error {
 			return fmt.Errorf("go-cp: %w: %s", ErrNotExistCopyFile, file)
 		}
 	}
-	pasteDir := args[len(args)-1]
+	pasteDir, err := filepath.Abs(args[len(args)-1])
+	if err != nil {
+		return fmt.Errorf("go-cp: pasteDir: %w", err)
+	}
+
 	if err := validate.ExistSameFileInDir(pasteDir, copyFiles); err != nil {
 		return fmt.Errorf("go-cp: %w", err)
 	}
