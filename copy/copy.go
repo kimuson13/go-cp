@@ -3,7 +3,6 @@ package copy
 import (
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 
@@ -27,11 +26,13 @@ func Run(args []string) error {
 		}
 		copyFiles[i] = absolutePath
 	}
+
 	for _, file := range copyFiles {
 		if !validate.Exists(file) {
 			return fmt.Errorf("go-cp: %w: %s", ErrNotExistCopyFile, file)
 		}
 	}
+
 	pasteDir, err := filepath.Abs(args[len(args)-1])
 	if err != nil {
 		return fmt.Errorf("go-cp: pasteDir: %w", err)
@@ -51,18 +52,12 @@ func Run(args []string) error {
 }
 
 func MakeCopy(fileName, pasteDir string) error {
-	fileInfo, err := os.Open(fileName)
+	file, err := os.ReadFile(fileName)
 	if err != nil {
-		return fmt.Errorf("MakeCopy: open: %w", err)
-	}
-	defer fileInfo.Close()
-
-	b, err := io.ReadAll(fileInfo)
-	if err != nil {
-		return fmt.Errorf("MakeCopy: ReadAll: %w", err)
+		return fmt.Errorf("MakeCopy: ReadFile: %w", err)
 	}
 
-	if err := os.WriteFile(filepath.Join(pasteDir, filepath.Base(fileInfo.Name())), b, 0777); err != nil {
+	if err := os.WriteFile(filepath.Join(pasteDir, filepath.Base(fileName)), file, 0777); err != nil {
 		return fmt.Errorf("MakeCopy: WriteFile: %w", err)
 	}
 
