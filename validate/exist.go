@@ -2,6 +2,7 @@ package validate
 
 import (
 	"errors"
+	"fmt"
 	"os"
 )
 
@@ -18,13 +19,13 @@ func Exists(path string) bool {
 func ExistSameFileInDir(path string, copyFiles []string) error {
 	files, err := os.ReadDir(path)
 	if err != nil {
-		return err
+		return fmt.Errorf("ExistSameFileInDir: ReadDir: %w", err)
 	}
 
 	for _, file := range files {
 		if !file.IsDir() {
 			if ExistFileName(copyFiles, file.Name()) {
-				return ErrAlreadyExist
+				return fmt.Errorf("ExistSameFileInDir: ExistFileName: %w", ErrAlreadyExist)
 			}
 		}
 	}
