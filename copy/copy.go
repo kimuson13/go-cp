@@ -19,7 +19,6 @@ func Run(args []string) error {
 	if len(args) < 2 {
 		return fmt.Errorf("go-cp: %w", ErrTooShort)
 	}
-	// copyFiles := args[:len(args)-1]
 	copyFiles := make([]string, len(args)-1)
 	for i, arg := range args[:len(args)-1] {
 		absolutePath, err := filepath.Abs(arg)
