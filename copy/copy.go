@@ -3,7 +3,6 @@ package copy
 import (
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 
@@ -17,17 +16,30 @@ var (
 
 func Run(args []string) error {
 	if len(args) < 2 {
-		return ErrTooShort
+		return fmt.Errorf("go-cp: %w", ErrTooShort)
 	}
-	copyFiles := args[:len(args)-1]
+	copyFiles := make([]string, len(args)-1)
+	for i, arg := range args[:len(args)-1] {
+		absolutePath, err := filepath.Abs(arg)
+		if err != nil {
+			return fmt.Errorf("go-cp: copyFiles: %w", err)
+		}
+		copyFiles[i] = absolutePath
+	}
+
 	for _, file := range copyFiles {
 		if !validate.Exists(file) {
-			return fmt.Errorf("%w: %s", ErrNotExistCopyFile, file)
+			return fmt.Errorf("go-cp: %w: %s", ErrNotExistCopyFile, file)
 		}
 	}
-	pasteDir := args[len(args)-1]
+
+	pasteDir, err := filepath.Abs(args[len(args)-1])
+	if err != nil {
+		return fmt.Errorf("go-cp: pasteDir: %w", err)
+	}
+
 	if err := validate.ExistSameFileInDir(pasteDir, copyFiles); err != nil {
-		return err
+		return fmt.Errorf("go-cp: %w", err)
 	}
 
 	for _, file := range copyFiles {
@@ -40,57 +52,14 @@ func Run(args []string) error {
 }
 
 func MakeCopy(fileName, pasteDir string) error {
-	fileInfo, err := os.Open(fileName)
+	file, err := os.ReadFile(fileName)
 	if err != nil {
-		return err
+		return fmt.Errorf("MakeCopy: ReadFile: %w", err)
 	}
 
-	pasteFile, err := os.Create(filepath.Join(pasteDir, fileInfo.Name()))
-	if err != nil {
-		return err
-	}
-
-	b, err := io.ReadAll(fileInfo)
-	if err != nil {
-		return err
-	}
-
-	if _, err := pasteFile.Write(b); err != nil {
-		return err
+	if err := os.WriteFile(filepath.Join(pasteDir, filepath.Base(fileName)), file, 0777); err != nil {
+		return fmt.Errorf("MakeCopy: WriteFile: %w", err)
 	}
 
 	return nil
 }
-
-// func Exists(path string) bool {
-// 	_, err := os.Stat(path)
-
-// 	return !os.IsNotExist(err)
-// }
-
-// func ExistSameFileInDir(path string, copyFiles []string) error {
-// 	files, err := os.ReadDir(path)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	for _, file := range files {
-// 		if !file.IsDir() {
-// 			if ExistFileName(copyFiles, file.Name()) {
-// 				return ErrAlreadyExist
-// 			}
-// 		}
-// 	}
-
-// 	return nil
-// }
-
-// func ExistFileName(target []string, name string) bool {
-// 	for _, v := range target {
-// 		if v == name {
-// 			return true
-// 		}
-// 	}
-
-// 	return false
-// }
